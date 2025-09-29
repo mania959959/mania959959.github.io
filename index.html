@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幸运抽奖系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .input-section {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        #addBtn {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        #addBtn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        #startBtn {
+            background: #FF9800;
+            color: white;
+        }
+        
+        #startBtn:hover {
+            background: #e68900;
+            transform: translateY(-2px);
+        }
+        
+        #stopBtn {
+            background: #f44336;
+            color: white;
+        }
+        
+        #stopBtn:hover {
+            background: #da190b;
+            transform: translateY(-2px);
+        }
+        
+        .control-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .button-section {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .option-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
+        
+        .option-section label {
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .option-section input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .result-section {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        #result {
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .participants-section {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .participants-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+        }
+        
+        #clearAllBtn {
+            background: #ff5252;
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+        
+        #clearAllBtn:hover {
+            background: #ff0000;
+        }
+        
+        #participantsList {
+            list-style-type: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        #participantsList li {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        #participantsList li:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .delete-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(255, 0, 0, 0.7);
+            transform: scale(1.1);
+        }
+        
+        .history-section {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        #historyList {
+            list-style-type: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        #historyList li {
+            background: rgba(255, 215, 0, 0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rolling {
+            animation: rolling 0.1s infinite;
+        }
+        
+        @keyframes rolling {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+        
+        .winner {
+            animation: winner 1s ease;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+        
+        @keyframes winner {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .empty-message {
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .input-section {
+                flex-direction: column;
+            }
+            
+            .control-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .button-section {
+                justify-content: center;
+            }
+            
+            #result {
+                font-size: 2rem;
+            }
+            
+            .participants-header, .history-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 幸运抽奖系统 🎉</h1>
+        
+        <div class="input-section">
+            <input type="text" id="nameInput" placeholder="请输入参与者姓名">
+            <button id="addBtn">添加</button>
+        </div>
+        
+        <div class="control-section">
+            <div class="button-section">
+                <button id="startBtn">开始抽奖</button>
+                <button id="stopBtn" disabled>停止</button>
+            </div>
+            
+            <div class="option-section">
+                <input type="checkbox" id="autoRemove" checked>
+                <label for="autoRemove">自动移除中奖者</label>
+            </div>
+        </div>
+        
+        <div class="result-section">
+            <h2>中奖者</h2>
+            <div id="result">等待抽奖...</div>
+        </div>
+        
+        <div class="participants-section">
+            <div class="participants-header">
+                <h2>参与者列表 (剩余: <span id="participantCount">0</span> 人)</h2>
+                <button id="clearAllBtn">清空列表</button>
+            </div>
+            <ul id="participantsList">
+                <li class="empty-message">暂无参与者，请添加姓名</li>
+            </ul>
+        </div>
+        
+        <div class="history-section">
+            <div class="history-header">
+                <h2>中奖历史记录</h2>
+                <button id="clearHistoryBtn">清空记录</button>
+            </div>
+            <ul id="historyList">
+                <li class="empty-message">暂无中奖记录</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('nameInput');
+            const addBtn = document.getElementById('addBtn');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const result = document.getElementById('result');
+            const participantsList = document.getElementById('participantsList');
+            const historyList = document.getElementById('historyList');
+            const clearAllBtn = document.getElementById('clearAllBtn');
+            const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+            const autoRemoveCheckbox = document.getElementById('autoRemove');
+            const participantCount = document.getElementById('participantCount');
+            
+            let participants = [];
+            let winners = [];
+            let isRolling = false;
+            let rollInterval;
+            let currentWinner = null;
+            
+            // 添加参与者
+            addBtn.addEventListener('click', function() {
+                const name = nameInput.value.trim();
+                if (name) {
+                    participants.push(name);
+                    updateParticipantsList();
+                    nameInput.value = '';
+                    nameInput.focus();
+                    
+                    // 如果有参与者，启用开始按钮
+                    if (participants.length > 0) {
+                        startBtn.disabled = false;
+                    }
+                }
+            });
+            
+            // 按Enter键添加参与者
+            nameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addBtn.click();
+                }
+            });
+            
+            // 开始抽奖
+            startBtn.addEventListener('click', function() {
+                if (participants.length === 0) {
+                    alert('请先添加参与者！');
+                    return;
+                }
+                
+                isRolling = true;
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                result.classList.add('rolling');
+                
+                // 随机滚动名字
+                rollInterval = setInterval(function() {
+                    const randomIndex = Math.floor(Math.random() * participants.length);
+                    result.textContent = participants[randomIndex];
+                    currentWinner = participants[randomIndex];
+                }, 50);
+            });
+            
+            // 停止抽奖
+            stopBtn.addEventListener('click', function() {
+                if (!isRolling) return;
+                
+                clearInterval(rollInterval);
+                isRolling = false;
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                result.classList.remove('rolling');
+                result.classList.add('winner');
+                
+                // 记录中奖者
+                if (currentWinner) {
+                    winners.push(currentWinner);
+                    updateHistoryList();
+                    
+                    // 如果启用了自动移除，从中奖者列表中移除
+                    if (autoRemoveCheckbox.checked) {
+                        const index = participants.indexOf(currentWinner);
+                        if (index !== -1) {
+                            participants.splice(index, 1);
+                            updateParticipantsList();
+                            
+                            // 如果没有参与者了，禁用开始按钮
+                            if (participants.length === 0) {
+                                startBtn.disabled = true;
+                            }
+                        }
+                    }
+                }
+                
+                // 移除动画类
+                setTimeout(function() {
+                    result.classList.remove('winner');
+                }, 1000);
+            });
+            
+            // 清空所有参与者
+            clearAllBtn.addEventListener('click', function() {
+                if (participants.length === 0) {
+                    return;
+                }
+                
+                if (confirm('确定要清空所有参与者吗？')) {
+                    participants = [];
+                    updateParticipantsList();
+                    startBtn.disabled = true;
+                    
+                    // 如果正在抽奖，停止抽奖
+                    if (isRolling) {
+                        clearInterval(rollInterval);
+                        isRolling = false;
+                        startBtn.disabled = false;
+                        stopBtn.disabled = true;
+                        result.classList.remove('rolling');
+                    }
+                    
+                    result.textContent = '等待抽奖...';
+                }
+            });
+            
+            // 清空中奖历史
+            clearHistoryBtn.addEventListener('click', function() {
+                if (winners.length === 0) {
+                    return;
+                }
+                
+                if (confirm('确定要清空中奖历史记录吗？')) {
+                    winners = [];
+                    updateHistoryList();
+                }
+            });
+            
+            // 更新参与者列表
+            function updateParticipantsList() {
+                participantsList.innerHTML = '';
+                participantCount.textContent = participants.length;
+                
+                if (participants.length === 0) {
+                    participantsList.innerHTML = '<li class="empty-message">暂无参与者，请添加姓名</li>';
+                    return;
+                }
+                
+                participants.forEach(function(name, index) {
+                    const li = document.createElement('li');
+                    
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = name;
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.innerHTML = '×';
+                    deleteBtn.title = '删除此参与者';
+                    
+                    // 删除单个参与者
+                    deleteBtn.addEventListener('click', function() {
+                        if (confirm(`确定要删除 "${name}" 吗？`)) {
+                            participants.splice(index, 1);
+                            updateParticipantsList();
+                            
+                            // 如果没有参与者了，禁用开始按钮
+                            if (participants.length === 0) {
+                                startBtn.disabled = true;
+                                
+                                // 如果正在抽奖，停止抽奖
+                                if (isRolling) {
+                                    clearInterval(rollInterval);
+                                    isRolling = false;
+                                    startBtn.disabled = false;
+                                    stopBtn.disabled = true;
+                                    result.classList.remove('rolling');
+                                    result.textContent = '等待抽奖...';
+                                }
+                            }
+                        }
+                    });
+                    
+                    li.appendChild(nameSpan);
+                    li.appendChild(deleteBtn);
+                    participantsList.appendChild(li);
+                });
+            }
+            
+            // 更新中奖历史列表
+            function updateHistoryList() {
+                historyList.innerHTML = '';
+                
+                if (winners.length === 0) {
+                    historyList.innerHTML = '<li class="empty-message">暂无中奖记录</li>';
+                    return;
+                }
+                
+                // 显示最近的中奖者（最新的在前面）
+                winners.slice().reverse().forEach(function(winner, index) {
+                    const li = document.createElement('li');
+                    li.textContent = `${winners.length - index}. ${winner}`;
+                    historyList.appendChild(li);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
